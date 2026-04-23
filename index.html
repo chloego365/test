@@ -90,7 +90,7 @@
   const GAS_URL = "https://script.google.com/macros/s/AKfycbwQTu5RDDcYKFmwcbUsAdE1mN-YbUeIG0vQvfPj3p3meqJ52UG1ulY7PA7IyQof5oYU/exec"; 
   let user = { name: "", pwd: "", isManager: false };
   let db = { config: [], schedule: [], unavail: [], locked: false };
-  let currentDisplayDate = new Date(); // 當前顯示的月份
+  let currentDisplayDate = new Date(); 
 
   function showAdminLogin() {
     document.getElementById('login-ui').style.display = 'none';
@@ -107,7 +107,7 @@
         user = { name: n, pwd: p, isManager: res.isManager };
         localStorage.setItem('asahi_user', JSON.stringify(user));
         location.reload(); 
-      } else { alert("驗證失敗"); }
+      } else { alert("密碼錯誤"); }
     });
   }
 
@@ -141,32 +141,25 @@
   function renderCalendar() {
     const grid = document.getElementById('cal-grid');
     grid.innerHTML = "";
-    
     const year = currentDisplayDate.getFullYear();
     const month = currentDisplayDate.getMonth();
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    
     document.getElementById('cal-month-title').innerText = `${year}年 ${month + 1}月`;
-    
-    // 填充月初空白
     for (let i = 0; i < firstDay; i++) {
         const empty = document.createElement('div');
         empty.className = 'cal-day other-month';
         grid.appendChild(empty);
     }
-
     const today = new Date();
     for (let i = 1; i <= daysInMonth; i++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
       const div = document.createElement('div');
       div.className = 'cal-day';
       if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) div.classList.add('today');
-      
       const config = db.config.find(c => formatDate(c[0]) === dateStr);
       const slots = config ? JSON.parse(config[1]) : getDefaultSlots(new Date(dateStr).getDay());
       const takers = db.schedule.filter(s => formatDate(s[1]) === dateStr);
-      
       div.innerHTML = `<b>${i}</b><span class="badge">${takers.length}/${slots.length}人</span>`;
       div.onclick = () => showModal(dateStr, slots, takers);
       grid.appendChild(div);
@@ -177,14 +170,12 @@
     const body = document.getElementById('modal-body');
     document.getElementById('modal-date').innerText = date;
     let html = "";
-
     if (user.isManager) {
-      html += `<h4 style="color:var(--main-brown)">店長佈局設定</h4>`;
+      html += `<h4>管理設定</h4>`;
       slots.forEach((s, idx) => {
         const t = takers.find(tk => tk[2] == idx);
         html += `<div style="padding:10px; border-bottom:1px solid #EEE;">
-          <b>名額 ${idx+1}:</b> ${s.time} <br> 
-          人員: ${t ? t[3] : '<span style="color:red">空缺</span>'}
+          <b>名額 ${idx+1}:</b> ${s.time} <br> 人員: ${t ? t[3] : '<span style="color:red">空缺</span>'}
           ${t ? `<button onclick="staffAction('${date}', 'remove_staff', ${idx})" style="float:right">移除</button>` : ''}
         </div>`;
       });
@@ -196,15 +187,13 @@
         if (t) html += `<div class="btn" style="background:#F5F5F5; color:#666; text-align:left;">✅ ${t[3]} (${s.time})</div>`;
         else if (!db.locked) html += `<button class="btn" style="background:var(--accent-green); color:white;" onclick="staffAction('${date}', 'grab', ${idx})">🙋 搶班: ${s.time}</button>`;
       });
-
       const unavails = db.unavail.filter(u => formatDate(u[1]) === date);
       html += `<h4 style="margin-top:20px;">不可支援名單</h4>`;
       unavails.forEach(u => html += `<div style="color:red; margin-bottom:5px;">❌ ${u[2]}</div>`);
-      
       if (!db.locked) {
         const me = unavails.find(u => u[2] === user.name);
-        if (me) html += `<button class="btn" style="background:#EEE" onclick="staffAction('${date}', 'cancel_unavail')">我有空了，取消標記</button>`;
-        else html += `<button class="btn" style="background:#FFF0F0; color:red;" onclick="staffAction('${date}', 'unavail')">這天我不能上班</button>`;
+        if (me) html += `<button class="btn" style="background:#EEE" onclick="staffAction('${date}', 'cancel_unavail')">取消標記</button>`;
+        else html += `<button class="btn" style="background:#FFF0F0; color:red;" onclick="staffAction('${date}', 'unavail')">標記不能上班</button>`;
       }
     }
     body.innerHTML = html;
@@ -212,8 +201,8 @@
   }
 
   function mgrConfigDate(date) {
-    const num = prompt("需要幾個人？", "2");
-    const time = prompt("預設時間？", "11:00-18:00");
+    const num = prompt("人數？", "2");
+    const time = prompt("時間？", "11:00-18:00");
     if (!num) return;
     const slots = Array.from({length: parseInt(num)}, () => ({time: time}));
     callGAS({ mode: 'manager_set_config', name: user.name, password: user.pwd, date: date, slots: JSON.stringify(slots) }, () => { closeModal(); refreshData(); });
