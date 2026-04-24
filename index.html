@@ -5,62 +5,67 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Asahi Cafe 旗艦系統</title>
   <style>
-    :root { --main-brown: #8D6E63; --accent-green: #6B8E23; --bg: #FAF9F6; }
-    body { font-family: -apple-system, "PingFang TC", sans-serif; background: var(--bg); color: #5D4037; margin: 0; padding: 15px; }
-    .card { background: white; border-radius: 24px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 480px; margin: auto; }
-    .btn { width: 100%; padding: 14px; margin: 10px 0; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 16px; }
-    .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin: 15px 0; }
-    .cal-day { padding: 10px 2px; background: #FFF; border: 1px solid #F0EFEF; border-radius: 10px; font-size: 12px; text-align: center; cursor: pointer; position: relative; min-height: 55px; }
-    .cal-day.today { border: 2px solid var(--accent-green); }
-    .cal-day.selected { background: var(--main-brown) !important; color: white !important; }
-    .cal-day.has-event { background: #FFF8E1; border: 1px solid #FFD54F; }
-    .event-label { font-size: 9px; color: #F57C00; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-top: 2px; }
-    .badge { font-size: 9px; color: #999; display: block; }
-    .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:none; align-items:center; justify-content:center; z-index:1000; padding:20px; box-sizing:border-box; }
-    .modal-content { background:white; width:100%; max-width:380px; border-radius:20px; padding:25px; }
-    input, select { width:100%; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #DDD; font-size:16px; }
-    .nav-btn { background: none; border: 1px solid #DDD; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; }
-    .selected-bar { background: var(--main-brown); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; display: none; }
+    :root { --main-brown: #8D6E63; --accent-green: #6B8E23; --bg: #FAF9F6; --light-pink: #FFE4E1; --gray-bar: #E0E0E0; }
+    body { font-family: -apple-system, "PingFang TC", sans-serif; background: var(--bg); color: #5D4037; margin: 0; padding: 10px; }
+    .card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); max-width: 500px; margin: auto; }
+    .btn { width: 100%; padding: 12px; margin: 8px 0; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 15px; }
+    
+    .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin: 15px 0; }
+    .cal-day { background: #FFF; border: 1px solid #F0F0F0; border-radius: 8px; min-height: 80px; padding: 5px 2px; position: relative; cursor: pointer; font-size: 11px; overflow: hidden; display: flex; flex-direction: column; }
+    .cal-day.selected { border: 2px solid var(--main-brown); box-shadow: inset 0 0 5px rgba(141,110,99,0.3); }
+    .cal-day.has-event { background: #FFFDE7; }
+    
+    .event-top { font-size: 9px; color: #F57C00; font-weight: bold; height: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+    .date-num { font-weight: bold; font-size: 13px; margin-bottom: 3px; }
+    .slot-container { flex-grow: 1; display: flex; flex-direction: column; gap: 2px; }
+    .slot-bar { height: 14px; background: var(--gray-bar); border-radius: 3px; font-size: 9px; color: #666; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .slot-bar.occupied { background: #D7CCC8; color: var(--main-brown); font-weight: bold; }
+    .unavail-tag { background: var(--light-pink); font-size: 8px; color: #D81B60; padding: 1px; border-radius: 2px; margin-top: 2px; }
+    
+    .selected-bar { background: var(--main-brown); color: white; padding: 12px; border-radius: 12px; margin-bottom: 10px; text-align: center; display: none; }
+    .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:none; align-items:center; justify-content:center; z-index:1000; padding:15px; }
+    .modal-content { background:white; width:100%; max-width:360px; border-radius:15px; padding:20px; }
+    input, select { width:100%; padding:10px; margin:8px 0; border-radius:8px; border:1px solid #DDD; font-size: 15px; }
   </style>
 </head>
 <body>
 
 <div class="card">
   <div id="login-ui">
-    <h2 style="margin-top:0;">☕ Asahi Cafe</h2>
-    <select id="login-name"><option value="">選擇員工</option><option value="Gino">Gino</option><option value="陳品潔">陳品潔</option><option value="Izumi">Izumi</option><option value="山本勇太">山本勇太</option></select>
-    <input type="password" id="login-pwd" placeholder="密碼" inputmode="numeric">
-    <button class="btn" style="background:var(--main-brown); color:white;" onclick="handleLogin('staff')">登入</button>
-    <center><a href="#" style="color:#EEE; font-size:10px;" onclick="showAdmin()">Admin</a></center>
-  </div>
-
-  <div id="admin-login-ui" style="display:none;">
-    <h3>🔒 店長模式</h3>
-    <input type="password" id="admin-pwd" placeholder="管理密碼" inputmode="numeric">
-    <button class="btn" style="background:#333; color:white;" onclick="handleLogin('manager')">進入</button>
+    <h2 style="text-align:center;">☕ Asahi Cafe</h2>
+    <select id="login-name">
+      <option value="">選擇人員</option>
+      <option value="Gino">Gino</option>
+      <option value="陳品潔">陳品潔</option>
+      <option value="Izumi">Izumi</option>
+      <option value="山本勇太">山本勇太</option>
+    </select>
+    <input type="password" id="login-pwd" placeholder="輸入 4 位數密碼" inputmode="numeric">
+    <button class="btn" style="background:var(--main-brown); color:white;" onclick="handleLogin('staff')">進入系統</button>
+    <center><a href="#" style="color:#F5F5F5; font-size:10px; margin-top:30px; display:block;" onclick="showAdmin()">Admin Access</a></center>
   </div>
 
   <div id="main-ui" style="display:none;">
     <div style="display:flex; justify-content:space-between; align-items:center;">
       <h3 id="welcome-msg" style="margin:0;">你好</h3>
-      <button id="mgr-lock-btn" class="btn" style="width:100px; font-size:11px; display:none;" onclick="toggleLock()"></button>
+      <button id="mgr-lock-btn" class="btn" style="width:90px; padding:6px; font-size:11px; display:none;" onclick="toggleLock()"></button>
     </div>
 
     <div id="selected-bar" class="selected-bar">
-      <div id="sel-count-text">已選擇 0 天</div>
-      <button class="btn" style="background:white; color:var(--main-brown); margin-top:10px;" onclick="showBatchAction()">處理所選日期</button>
-    </div>
-    
-    <div style="display:flex; gap:10px; margin-top:15px;">
-      <button class="btn" style="background:var(--accent-green); color:white;" onclick="doPunch('上班')">🌅 上班</button>
-      <button class="btn" style="background:#BC8F8F; color:white;" onclick="doPunch('下班')">🌇 下班</button>
+      <span id="sel-count-text">已選擇 0 天</span>
+      <button class="btn" style="background:white; color:var(--main-brown); margin:8px 0 0 0; padding:6px;" onclick="showBatchAction()">批次處理</button>
     </div>
 
-    <div style="margin-top:20px;">
+    <div style="display:flex; gap:8px;">
+      <button class="btn" style="background:var(--accent-green); color:white;" onclick="doPunch('上班')">🌅 上班打卡</button>
+      <button class="btn" style="background:#BC8F8F; color:white;" onclick="doPunch('下班')">🌇 下班打卡</button>
+    </div>
+
+    <div style="margin-top:15px;">
       <div style="display:flex; justify-content:center; align-items:center; gap:20px;">
-        <button class="nav-btn" onclick="changeMonth(-1)">◀</button>
-        <h4 id="cal-month-title"></h4>
-        <button class="nav-btn" onclick="changeMonth(1)">▶</button>
+        <button onclick="changeMonth(-1)" style="border:none; background:none; font-size:20px;">◀</button>
+        <h4 id="cal-month-title" style="margin:0;"></h4>
+        <button onclick="changeMonth(1)" style="border:none; background:none; font-size:20px;">▶</button>
       </div>
       <div class="calendar" id="cal-grid"></div>
     </div>
@@ -70,9 +75,9 @@
 
 <div id="action-modal" class="modal">
   <div class="modal-content">
-    <h3 id="modal-date"></h3>
+    <h3 id="modal-date" style="margin-top:0;"></h3>
     <div id="modal-body"></div>
-    <button class="btn" onclick="closeModal()">關閉</button>
+    <button class="btn" style="background:#EEE" onclick="closeModal()">關閉</button>
   </div>
 </div>
 
@@ -85,22 +90,31 @@
 
   function handleLogin(type) {
     const n = (type==='manager') ? 'Manager' : document.getElementById('login-name').value;
-    const p = (type==='manager') ? document.getElementById('admin-pwd').value : document.getElementById('login-pwd').value;
+    const p = (type==='manager') ? prompt("管理員驗證") : document.getElementById('login-pwd').value;
     callGAS({ mode:'login', name:n, password:p }, res => {
       if(res.status==='success'){ user={name:n, pwd:p, isManager:res.isManager}; localStorage.setItem('asahi_user', JSON.stringify(user)); initApp(); }
-      else alert("密碼錯誤");
+      else alert("密碼不正確");
     });
   }
 
   function initApp() {
     const saved = localStorage.getItem('asahi_user');
-    if(saved){ user=JSON.parse(saved); document.getElementById('login-ui').style.display='none'; document.getElementById('admin-login-ui').style.display='none'; document.getElementById('main-ui').style.display='block'; refreshData(); }
+    if(saved){ 
+      user=JSON.parse(saved); 
+      document.getElementById('login-ui').style.display='none'; 
+      document.getElementById('main-ui').style.display='block'; 
+      refreshData(); 
+    }
   }
 
   function refreshData() {
-    document.getElementById('welcome-msg').innerText = "你好，"+user.name;
+    document.getElementById('welcome-msg').innerText = "你好，" + user.name;
     if(user.isManager) document.getElementById('mgr-lock-btn').style.display='block';
-    callGAS({ mode:'get_month_data', name:user.name, password:user.pwd }, res => { db=res; renderCalendar(); });
+    callGAS({ mode:'get_month_data', name:user.name, password:user.pwd }, res => { 
+      db = res; 
+      document.getElementById('mgr-lock-btn').innerText = db.locked ? "解鎖班表" : "鎖定班表";
+      renderCalendar(); 
+    });
   }
 
   function renderCalendar() {
@@ -110,16 +124,34 @@
     const firstDay = new Date(y, m, 1).getDay(), days = new Date(y, m+1, 0).getDate();
     
     for(let i=0; i<firstDay; i++) grid.appendChild(document.createElement('div'));
+    
     for(let i=1; i<=days; i++) {
       const dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
       const div = document.createElement('div'); div.className = 'cal-day';
       if(selectedDates.includes(dStr)) div.classList.add('selected');
       
       const config = db.config.find(c => formatDate(c[0])===dStr);
+      const takers = db.schedule.filter(s => formatDate(s[1])===dStr);
+      const unavails = db.unavail.filter(u => formatDate(u[1])===dStr);
       const eventName = config ? config[2] : "";
-      if(eventName) { div.classList.add('has-event'); div.innerHTML = `<b>${i}</b><span class="event-label">${eventName}</span>`; }
-      else { div.innerHTML = `<b>${i}</b>`; }
+      const slots = config ? JSON.parse(config[1]) : getDefaultSlots(new Date(dStr).getDay());
       
+      if(eventName) div.classList.add('has-event');
+      
+      let html = `<span class="event-top">${eventName}</span>`;
+      html += `<span class="date-num">${i}</span>`;
+      html += `<div class="slot-container">`;
+      
+      slots.forEach((s, idx) => {
+        const taker = takers.find(tk => tk[2] == idx);
+        if(taker) html += `<div class="slot-bar occupied">${taker[3]}</div>`;
+        else html += `<div class="slot-bar">空缺</div>`;
+      });
+      html += `</div>`;
+      
+      unavails.forEach(u => html += `<div class="unavail-tag">❌ ${u[2]}</div>`);
+      
+      div.innerHTML = html;
       div.onclick = () => toggleSelect(dStr);
       grid.appendChild(div);
     }
@@ -128,25 +160,24 @@
   function toggleSelect(date) {
     const idx = selectedDates.indexOf(date);
     if(idx > -1) selectedDates.splice(idx, 1); else selectedDates.push(date);
-    const bar = document.getElementById('selected-bar');
-    bar.style.display = selectedDates.length > 0 ? 'block' : 'none';
+    document.getElementById('selected-bar').style.display = selectedDates.length > 0 ? 'block' : 'none';
     document.getElementById('sel-count-text').innerText = `已選擇 ${selectedDates.length} 天`;
     renderCalendar();
   }
 
   function showBatchAction() {
     const body = document.getElementById('modal-body');
-    document.getElementById('modal-date').innerText = "批次處理";
+    document.getElementById('modal-date').innerText = "批次處理 " + selectedDates.length + " 天";
     let html = "";
     if(user.isManager) {
-      html = `活動名稱: <input id="mgr-event" placeholder="例: 特賣會">
+      html = `活動名稱: <input id="mgr-event" placeholder="例: SALE">
               人數: <input id="mgr-num" type="number" value="2">
               時間: <input id="mgr-time" value="11:00-18:00">
-              <button class="btn btn-mgr" style="background:#333; color:white;" onclick="mgrBatchSet()">設定為活動日</button>`;
+              <button class="btn" style="background:#333; color:white;" onclick="mgrBatchSet()">設定活動日</button>`;
     } else {
-      html = `<button class="btn" style="background:var(--accent-green); color:white;" onclick="staffBatchAction('grab')">申請排班 (預設時段)</button>
-              <button class="btn" style="background:#BC8F8F; color:white;" onclick="staffBatchAction('unavail')">這幾天不能排班</button>
-              <button class="btn" style="background:#EEE" onclick="staffBatchAction('cancel_unavail')">取消「不能排班」標記</button>`;
+      html = `<button class="btn" style="background:var(--accent-green); color:white;" onclick="staffBatchAction('grab')">排班</button>
+              <button class="btn" style="background:#BC8F8F; color:white;" onclick="staffBatchAction('unavail')">不能排班</button>
+              <button class="btn" style="background:#EEE; color:#666;" onclick="staffBatchAction('cancel_unavail')">取消「不能排班」</button>`;
     }
     body.innerHTML = html;
     document.getElementById('action-modal').style.display = 'flex';
@@ -154,22 +185,29 @@
 
   function staffBatchAction(action) {
     if(db.locked && !user.isManager) return alert("班表已鎖定");
-    callGAS({ mode:'staff_action', name:user.name, password:user.pwd, dates:selectedDates.join(','), action:action, slotId:0 }, () => {
-      alert("處理完成"); selectedDates=[]; document.getElementById('selected-bar').style.display='none'; closeModal(); refreshData();
+    callGAS({ mode:'staff_action', name:user.name, password:user.pwd, dates:selectedDates.join(','), action:action }, () => {
+      alert("已完成登記"); selectedDates=[]; document.getElementById('selected-bar').style.display='none'; closeModal(); refreshData();
     });
   }
 
   function mgrBatchSet() {
-    const name = document.getElementById('mgr-event').value;
+    const ev = document.getElementById('mgr-event').value;
     const num = document.getElementById('mgr-num').value;
     const time = document.getElementById('mgr-time').value;
     const slots = Array.from({length: parseInt(num)}, () => ({time: time}));
-    let done = 0;
-    selectedDates.forEach(d => {
-      callGAS({ mode:'manager_set_config', name:user.name, password:user.pwd, date:d, slots:JSON.stringify(slots), eventName:name }, () => {
-        done++; if(done === selectedDates.length){ alert("設定完成"); selectedDates=[]; closeModal(); refreshData(); }
-      });
+    callGAS({ mode:'manager_set_config', name:user.name, password:user.pwd, dates:selectedDates.join(','), slots:JSON.stringify(slots), eventName:ev }, () => {
+      alert("已完成設定"); selectedDates=[]; document.getElementById('selected-bar').style.display='none'; closeModal(); refreshData();
     });
+  }
+
+  function toggleLock() {
+    callGAS({ mode:'set_lock', name:user.name, password:user.pwd, lock: !db.locked }, refreshData);
+  }
+
+  function doPunch(type) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      callGAS({ mode:'punch', name:user.name, password:user.pwd, type:type, lat:pos.coords.latitude, lon:pos.coords.longitude }, res => { alert(res.message); refreshData(); });
+    }, () => alert("請開啟GPS定位"));
   }
 
   function callGAS(p, cb){
@@ -179,9 +217,9 @@
   }
   function changeMonth(o){ currentDisplayDate.setMonth(currentDisplayDate.getMonth()+o); renderCalendar(); }
   function closeModal(){ document.getElementById('action-modal').style.display='none'; }
-  function showAdmin(){ document.getElementById('login-ui').style.display='none'; document.getElementById('admin-login-ui').style.display='block'; }
-  function formatDate(d){ return new Date(d).toISOString().split('T')[0]; }
+  function formatDate(d){ try { return new Date(d).toISOString().split('T')[0]; } catch(e) { return ""; } }
   function logout(){ localStorage.clear(); location.reload(); }
+  function showAdmin(){ document.getElementById('login-ui').style.display='none'; document.getElementById('main-ui').style.display='none'; }
   document.addEventListener('DOMContentLoaded', initApp);
 </script>
 </body>
