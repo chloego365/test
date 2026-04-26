@@ -9,79 +9,64 @@
     body { font-family: -apple-system, "PingFang TC", sans-serif; background: var(--bg); color: #5D4037; margin: 0; padding: 10px; }
     .card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); max-width: 500px; margin: auto; min-height: 90vh; display: flex; flex-direction: column; }
     .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 15px; }
-    
-    /* 頁籤 */
-    .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+    .tabs { display: flex; p: 10px; margin-bottom: 20px; }
     .tab-btn { flex: 1; padding: 12px; border: 1px solid #DDD; background: #FFF; border-radius: 12px; font-weight: bold; color: #999; cursor: pointer; font-size: 15px; }
     .tab-btn.active { background: var(--main-brown); color: #FFF; border-color: var(--main-brown); }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
     
-    /* 月曆 */
+    .notice-board { margin: 10px 0; padding: 12px; background: #FFF9C4; border-left: 4px solid #FBC02D; border-radius: 8px; font-size: 14px; color: #5D4037; }
+    
     .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin: 15px 0; }
     .cal-day { background: #FFF; border: 1px solid #F0F0F0; border-radius: 8px; min-height: 95px; padding: 4px 2px; cursor: pointer; display: flex; flex-direction: column; align-items: center; position: relative; }
-    
-    /* 今日與選取 */
     .cal-day.today { background: #FFFDE7; border: 2px solid #FFD54F; }
     .cal-day.selected { background-color: #D7CCC8 !important; border: 2px solid #5D4037 !important; box-shadow: 0 0 5px rgba(93,64,55,0.4) !important; }
-    
-    /* 格子內容對齊 */
     .event-top { font-size: 9px; color: #F57C00; font-weight: bold; height: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; width: 100%; margin-bottom: 2px; }
     .date-num { font-weight: bold; font-size: 14px; margin-bottom: 4px; color: #333; }
     .slot-container { width: 95%; display: flex; flex-direction: column; gap: 2px; }
-    .slot-bar { height: 16px; background: var(--gray-bar); border-radius: 4px; font-size: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; color: transparent; }
+    .slot-bar { height: 16px; background: var(--gray-bar); border-radius: 4px; font-size: 9px; display: flex; align-items: center; justify-content: center; overflow: hidden; color: transparent; }
     .slot-bar.occupied { background: #EFEBE9; color: var(--main-brown); font-weight: bold; border: 1px solid #D7CCC8; }
-    .unavail-container { width: 95%; display: flex; flex-direction: column; gap: 2px; margin-top: auto; padding-top: 5px; } /* 靠下對齊 */
+    .unavail-container { width: 95%; display: flex; flex-direction: column; gap: 2px; margin-top: auto; padding-top: 5px; } 
     .unavail-tag { background: var(--light-pink); font-size: 9px; color: #D81B60; padding: 2px 0; border-radius: 3px; text-align: center; }
-    
-    /* 操作面板 (下方防呆按鈕) */
     .action-panel { background: #F9F9F9; border: 1px solid #E0E0E0; border-radius: 12px; padding: 15px; margin-top: 15px; }
     .action-btn { transition: 0.2s; opacity: 0.4; pointer-events: none; margin: 4px 0; }
     .action-btn.active { opacity: 1; pointer-events: auto; }
-    input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid #DDD; font-size: 14px; box-sizing: border-box; }
+    input, textarea { width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid #DDD; font-size: 14px; box-sizing: border-box; font-family: inherit; }
+    
+    /* 薪資報表設計 */
+    .payroll-table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: center; background: #FFF; border-radius: 8px; overflow: hidden; }
+    .payroll-table th { background: var(--main-brown); color: white; padding: 10px 4px; }
+    .payroll-table td { padding: 10px 4px; border-bottom: 1px solid #EEE; }
+    .err-text { color: #D81B60; font-weight: bold; font-size: 9px; display: block; margin-top: 2px; }
   </style>
 </head>
 <body>
-
 <div class="card">
   <div id="login-ui">
     <h2 style="text-align:center; margin-bottom:30px;">☕ Asahi Cafe</h2>
     <select id="login-name" style="width:100%; padding:12px; border-radius:8px; border:1px solid #DDD; margin-bottom:10px; font-size:15px;">
-      <option value="">選擇人員</option>
-      <option value="Gino">Gino</option>
-      <option value="陳品潔">陳品潔</option>
-      <option value="Izumi">Izumi</option>
-      <option value="山本勇太">山本勇太</option>
+      <option value="">🔄 員工名單載入中...</option>
     </select>
-    <input type="password" id="login-pwd" placeholder="輸入 4 位數密碼" inputmode="numeric">
+    <input type="password" id="login-pwd" placeholder="輸入密碼" inputmode="numeric">
     <button class="btn" style="background:var(--main-brown); color:white; margin-top:10px;" onclick="handleLogin('staff')">進入系統</button>
-    <div style="text-align:center; margin-top:60px;">
-        <span style="color:#F5F5F5; font-size:10px; cursor:pointer;" onclick="showAdminLogin()">Admin</span>
-    </div>
-  </div>
-
-  <div id="admin-login-ui" style="display:none; text-align:center;">
-    <h2 style="margin-bottom:30px; color:var(--main-brown);">🔒 店長模式</h2>
-    <input type="password" id="admin-pwd" placeholder="輸入管理密碼" inputmode="numeric">
-    <button class="btn" style="background:#333; color:white; margin-top:10px;" onclick="handleLogin('manager')">進入管理</button>
-    <button class="btn" style="background:#EEE; color:#666; margin-top:10px;" onclick="backToLogin()">返回</button>
+    <div style="text-align:center; margin-top:60px;"><span style="color:#F5F5F5; font-size:10px; cursor:pointer;" onclick="showAdminPrompt()">Admin</span></div>
   </div>
 
   <div id="main-ui" style="display:none; flex-grow: 1; flex-direction: column;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
       <h3 id="welcome-msg" style="margin:0;">你好</h3>
-      <button id="mgr-lock-btn" class="btn" style="width:90px; padding:6px; font-size:11px; display:none; margin:0;" onclick="toggleLock()"></button>
+      <button id="mgr-lock-btn" class="btn" style="width:100px; padding:6px; font-size:12px; display:none; margin:0;" onclick="toggleLock()"></button>
     </div>
-
-    <div class="tabs">
-      <button class="tab-btn active" id="btn-tab-punch" onclick="switchTab('punch')">📍 出勤打卡</button>
-      <button class="tab-btn" id="btn-tab-cal" onclick="switchTab('cal')">📅 月曆排班</button>
+    
+    <div class="tabs" id="tab-nav">
+      <button class="tab-btn active" id="btn-tab-punch" onclick="switchTab('punch')">📍 打卡</button>
+      <button class="tab-btn" id="btn-tab-cal" onclick="switchTab('cal')">📅 排班</button>
+      <button class="tab-btn" id="btn-tab-payroll" onclick="switchTab('payroll')" style="display:none;">💰 薪資</button>
     </div>
-
+    
     <div id="tab-punch" class="tab-content active" style="margin-top: 20px;">
       <button class="btn" style="background:var(--accent-green); color:white; padding: 25px; font-size: 18px;" onclick="doPunch('上班')">🌅 上班打卡</button>
       <button class="btn" style="background:#BC8F8F; color:white; padding: 25px; font-size: 18px; margin-top: 15px;" onclick="doPunch('下班')">🌇 下班打卡</button>
-      <p style="text-align: center; color: #999; font-size: 12px; margin-top: 25px;">請確保您在店面附近進行打卡</p>
     </div>
 
     <div id="tab-cal" class="tab-content">
@@ -91,99 +76,247 @@
         <button onclick="changeMonth(1)" style="border:none; background:none; font-size:22px; cursor:pointer; color:var(--main-brown);">▶</button>
       </div>
       
+      <div class="notice-board">
+        <div style="font-weight: bold; margin-bottom: 5px; color: #F57C00;">📌 當月注意事項</div>
+        <div id="month-note-text" style="white-space: pre-wrap; line-height: 1.4;">讀取中...</div>
+        <div id="mgr-note-edit" style="display:none; margin-top: 5px;">
+          <textarea id="mgr-note-input" rows="3" placeholder="請輸入本月注意事項..."></textarea>
+          <button class="btn" style="background: #FBC02D; color: #5D4037; padding: 8px; margin-top: 5px; font-size: 13px;" onclick="saveMonthNote()">💾 儲存注意事項</button>
+        </div>
+      </div>
+
       <div class="calendar" id="cal-grid"></div>
 
       <div class="action-panel">
         <div id="sel-count-text" style="font-weight:bold; color:#999; margin-bottom:12px; text-align:center; font-size:14px;">請先點選上方日期</div>
-        
         <div id="staff-actions" style="display:none; flex-direction:column;">
+          <input id="staff-note" placeholder="特殊時間 (選填，例：13:00-18:00)" style="font-size:12px; margin-bottom:8px;">
           <button class="btn action-btn staff-btn" style="background:var(--accent-green); color:white;" onclick="staffBatchAction('grab')">✅ 確定排班</button>
           <button class="btn action-btn staff-btn" style="background:#BC8F8F; color:white;" onclick="staffBatchAction('unavail')">❌ 不能排班</button>
-          <button class="btn action-btn staff-btn" style="background:#E0E0E0; color:#555;" onclick="staffBatchAction('cancel_unavail')">🧹 清除標記 (變回空白)</button>
+          <button class="btn action-btn staff-btn" style="background:#E0E0E0; color:#555;" onclick="staffBatchAction('cancel_unavail')">🧹 清除標記</button>
         </div>
-
         <div id="mgr-actions" style="display:none; flex-direction:column;">
           <input id="mgr-event" placeholder="活動名稱 (例: SALE)">
-          <div style="display:flex; gap:8px;">
-            <input id="mgr-num" type="number" placeholder="人數" value="2" style="flex:1;">
-            <input id="mgr-time" placeholder="時間" value="11:00-18:00" style="flex:2;">
-          </div>
+          <div style="display:flex; gap:8px;"><input id="mgr-num" type="number" value="2" style="flex:1;"><input id="mgr-time" value="11:00-18:00" style="flex:2;"></div>
           <button class="btn action-btn mgr-btn" style="background:var(--main-brown); color:white;" onclick="mgrBatchSet()">確認設定</button>
         </div>
       </div>
     </div>
 
+    <div id="tab-payroll" class="tab-content">
+      <div style="display:flex; justify-content:center; align-items:center; gap:25px; margin-bottom:15px;">
+        <button onclick="changeMonth(-1)" style="border:none; background:none; font-size:22px; cursor:pointer; color:var(--main-brown);">◀</button>
+        <h4 id="payroll-month-title" style="margin:0; min-width: 110px; text-align:center;"></h4>
+        <button onclick="changeMonth(1)" style="border:none; background:none; font-size:22px; cursor:pointer; color:var(--main-brown);">▶</button>
+      </div>
+      
+      <div style="overflow-x: auto; border: 1px solid #EEE; border-radius: 8px;">
+        <table class="payroll-table">
+          <thead>
+            <tr>
+              <th>日期</th>
+              <th>員工</th>
+              <th>排定時間</th>
+              <th>實際打卡</th>
+              <th>時數</th>
+              <th>薪資</th>
+            </tr>
+          </thead>
+          <tbody id="payroll-tbody"></tbody>
+        </table>
+      </div>
+      <h3 id="total-payroll" style="text-align: right; color: var(--main-brown); margin-top: 15px;">總計: $0</h3>
+    </div>
+
     <button class="btn" style="background:#F5F5F5; color:#999; margin-top:auto;" onclick="logout()">登出</button>
   </div>
 </div>
-
 <script>
   const GAS_URL = "https://script.google.com/macros/s/AKfycbwQTu5RDDcYKFmwcbUsAdE1mN-YbUeIG0vQvfPj3p3meqJ52UG1ulY7PA7IyQof5oYU/exec"; 
   let user = { name: "", pwd: "", isManager: false };
-  let db = { config: [], schedule: [], unavail: [], locked: false };
+  let db = { config: [], schedule: [], unavail: [], attendance: [], staffDetails: [], locked: true, monthNote: "" };
   let currentDisplayDate = new Date();
   let selectedDates = [];
 
-  function switchTab(tabId) {
-    document.getElementById('tab-punch').classList.remove('active');
-    document.getElementById('tab-cal').classList.remove('active');
-    document.getElementById('btn-tab-punch').classList.remove('active');
-    document.getElementById('btn-tab-cal').classList.remove('active');
-    document.getElementById('tab-' + tabId).classList.add('active');
-    document.getElementById('btn-tab-' + tabId).classList.add('active');
+  function switchTab(t) {
+    document.querySelectorAll('.tab-content, .tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-'+t).classList.add('active');
+    document.getElementById('btn-tab-'+t).classList.add('active');
+    if(t === 'payroll') renderPayroll();
   }
-
-  function showAdminLogin() {
-    document.getElementById('login-ui').style.display = 'none';
-    document.getElementById('admin-login-ui').style.display = 'block';
+  
+  function showAdminPrompt() {
+    let p = prompt(""); 
+    if (p === "8591") { user = { name: "Manager", pwd: "8591", isManager: true }; localStorage.setItem('asahi_user', JSON.stringify(user)); initApp(); }
   }
-
-  function backToLogin() {
-    document.getElementById('admin-login-ui').style.display = 'none';
-    document.getElementById('login-ui').style.display = 'block';
-  }
-
-  function handleLogin(type) {
-    const n = (type === 'manager') ? 'Manager' : document.getElementById('login-name').value;
-    const p = (type === 'manager') ? document.getElementById('admin-pwd').value : document.getElementById('login-pwd').value;
-    if(!p) return alert("請輸入密碼");
-    
+  
+  function handleLogin() {
+    const n = document.getElementById('login-name').value, p = document.getElementById('login-pwd').value;
+    if(!n) return alert("名單尚未載入，或未選擇人員");
     callGAS({ mode:'login', name:n, password:p }, res => {
-      if(res.status==='success'){ 
-        user={name:n, pwd:p, isManager:res.isManager}; 
-        localStorage.setItem('asahi_user', JSON.stringify(user)); 
-        initApp(); 
-      } else { alert("密碼錯誤"); }
+      if(res.status==='success'){ user={name:n, pwd:p, isManager:res.isManager}; localStorage.setItem('asahi_user', JSON.stringify(user)); initApp(); }
+      else alert(res.message || "密碼錯誤");
     });
   }
-
+  
   function initApp() {
     const saved = localStorage.getItem('asahi_user');
     if(saved){ 
       user=JSON.parse(saved); 
       document.getElementById('login-ui').style.display='none'; 
-      document.getElementById('admin-login-ui').style.display='none'; 
       document.getElementById('main-ui').style.display='flex'; 
       refreshData(); 
+    } else {
+      callGAS({ mode: 'get_staff' }, res => {
+        const sel = document.getElementById('login-name');
+        sel.innerHTML = '<option value="">請選擇人員</option>';
+        res.staffList.forEach(name => { sel.innerHTML += `<option value="${name}">${name}</option>`; });
+      });
     }
   }
-
+  
   function refreshData() {
+    const mStr = `${currentDisplayDate.getFullYear()}-${String(currentDisplayDate.getMonth()+1).padStart(2,'0')}`;
     document.getElementById('welcome-msg').innerText = "你好，" + user.name;
+    
+    // 介面權限分流
+    document.getElementById('tab-nav').style.display='flex';
     if(user.isManager) {
       document.getElementById('mgr-lock-btn').style.display='block';
-      document.getElementById('mgr-actions').style.display='flex';
-      document.getElementById('staff-actions').style.display='none';
+      document.getElementById('btn-tab-punch').style.display='none'; // 店長隱藏打卡
+      document.getElementById('btn-tab-payroll').style.display='block'; // 店長顯示薪資
+      document.getElementById('month-note-text').style.display = 'none';
+      document.getElementById('mgr-note-edit').style.display = 'block';
+      if(!document.getElementById('tab-payroll').classList.contains('active')) switchTab('cal');
     } else {
-      document.getElementById('mgr-actions').style.display='none';
-      document.getElementById('staff-actions').style.display='flex';
+      document.getElementById('btn-tab-punch').style.display='block';
+      document.getElementById('btn-tab-payroll').style.display='none';
+      document.getElementById('month-note-text').style.display = 'block';
+      document.getElementById('mgr-note-edit').style.display = 'none';
+      if(document.getElementById('tab-cal').classList.contains('active')) switchTab('cal'); else switchTab('punch');
     }
     
-    callGAS({ mode:'get_month_data', name:user.name, password:user.pwd }, res => { 
+    callGAS({ mode:'get_month_data', name:user.name, password:user.pwd, viewMonth: mStr }, res => { 
       db = res; 
-      document.getElementById('mgr-lock-btn').innerText = db.locked ? "🔓 解鎖班表" : "🔒 鎖定班表";
+      const lockBtn = document.getElementById('mgr-lock-btn');
+      if(db.locked) {
+        lockBtn.innerText = "🔒 班表鎖定中"; lockBtn.style.background = "#E0E0E0"; lockBtn.style.color = "#555";
+      } else {
+        lockBtn.innerText = "🔓 班表開放中"; lockBtn.style.background = "var(--main-brown)"; lockBtn.style.color = "white";
+      }
+      document.getElementById('month-note-text').innerText = db.monthNote || "本月無特別注意事項。";
+      document.getElementById('mgr-note-input').value = db.monthNote || "";
+      
       renderCalendar(); 
+      if(user.isManager && document.getElementById('tab-payroll').classList.contains('active')) renderPayroll();
     });
+  }
+
+  // 🟢 薪資計算核心邏輯
+  function renderPayroll() {
+    const tbody = document.getElementById('payroll-tbody');
+    tbody.innerHTML = '';
+    const y = currentDisplayDate.getFullYear(), m = currentDisplayDate.getMonth();
+    document.getElementById('payroll-month-title').innerText = `${y}年 ${m+1}月`;
+    
+    if(!db.staffDetails || !db.attendance) return;
+
+    let totalPay = 0;
+    let html = '';
+
+    // 1. 建立時薪對照表
+    const wageMap = {};
+    db.staffDetails.slice(1).forEach(row => { wageMap[row[0]] = parseFloat(row[2]) || 200; }); // 預設200
+
+    // 2. 整理打卡紀錄 (取每天第一筆上班、最後一筆下班)
+    const attMap = {}; 
+    db.attendance.slice(1).forEach(row => {
+      const dt = new Date(row[0]);
+      const dStr = formatDate(dt), name = row[1], type = row[2];
+      if(!attMap[name]) attMap[name] = {};
+      if(!attMap[name][dStr]) attMap[name][dStr] = { in: null, out: null };
+      if(type === '上班' && !attMap[name][dStr].in) attMap[name][dStr].in = dt;
+      else if (type === '下班') attMap[name][dStr].out = dt; // 覆蓋取最後一次
+    });
+
+    // 3. 找出當月所有排班並計算
+    const monthPrefix = `${y}-${String(m+1).padStart(2,'0')}`;
+    const scheds = db.schedule.filter(s => formatDate(s[1]).startsWith(monthPrefix));
+    scheds.sort((a, b) => new Date(a[1]) - new Date(b[1])); // 依日期排序
+
+    scheds.forEach(s => {
+      const dStr = formatDate(s[1]), name = s[3], note = s[4], slotIdx = s[2];
+      
+      // 取得排班時間 (優先取特殊備註，否則取 Config)
+      const conf = db.config.find(c => formatDate(c[0]) === dStr);
+      const slots = conf ? JSON.parse(conf[1]) : getDefaultSlots(new Date(dStr).getDay());
+      let schedTimeStr = slots[slotIdx] ? slots[slotIdx].time : "11:00-18:00";
+      if (note) schedTimeStr = note; 
+      
+      // 轉換排班時間為 Date 物件
+      const [startStr, endStr] = schedTimeStr.split('-');
+      const schedStart = parseTime(dStr, startStr), schedEnd = parseTime(dStr, endStr);
+
+      // 取得實際打卡時間
+      const aRecord = (attMap[name] && attMap[name][dStr]) ? attMap[name][dStr] : { in: null, out: null };
+      let actualIn = aRecord.in, actualOut = aRecord.out;
+      
+      let isAnomaly = false, anomalyText = "";
+
+      // 判斷打卡異常與防呆代入
+      if (!actualIn && !actualOut) {
+        isAnomaly = true; anomalyText = "未打卡";
+      } else {
+        if (!actualOut) { isAnomaly = true; anomalyText = "忘記下班"; actualOut = schedEnd; } // 忘記下班，代入排定下班
+        if (!actualIn) { isAnomaly = true; anomalyText = "忘記上班"; actualIn = schedStart; }
+      }
+
+      let pay = 0, workMins = 0;
+      let displayIn = actualIn ? formatTime(actualIn) : "--:--";
+      let displayOut = actualOut ? formatTime(actualOut) : "--:--";
+
+      // 結算邏輯
+      if (actualIn && actualOut) {
+        // 上班時間取「排班時間」與「實際打卡」中較晚的 (防灌水)
+        const effectiveIn = new Date(Math.max(schedStart.getTime(), actualIn.getTime()));
+        const effectiveOut = actualOut;
+        
+        workMins = (effectiveOut.getTime() - effectiveIn.getTime()) / 60000;
+        if (workMins < 0) workMins = 0;
+
+        const wage = wageMap[name] || 200;
+        pay = Math.round((workMins / 60) * wage);
+        totalPay += pay;
+      }
+
+      const hrs = (workMins / 60).toFixed(2);
+      
+      html += `<tr style="${isAnomaly ? 'background:#FFEbee;' : ''}">
+          <td>${dStr.slice(-5)}</td>
+          <td>${name}</td>
+          <td style="color:#888;">${schedTimeStr}</td>
+          <td style="font-weight:bold;">
+            ${displayIn} - ${displayOut}
+            ${isAnomaly ? `<span class="err-text">${anomalyText}</span>` : ''}
+          </td>
+          <td>${hrs}</td>
+          <td style="color:var(--main-brown); font-weight:bold;">$${pay}</td>
+      </tr>`;
+    });
+
+    if(html === '') html = '<tr><td colspan="6" style="padding:20px; color:#999;">當月尚無排班紀錄</td></tr>';
+    tbody.innerHTML = html;
+    document.getElementById('total-payroll').innerText = `總計: $${totalPay.toLocaleString()}`;
+  }
+
+  // 時間處理小工具
+  function parseTime(dStr, tStr) { const [h, m] = tStr.split(':'); const dt = new Date(dStr); dt.setHours(parseInt(h, 10), parseInt(m, 10), 0, 0); return dt; }
+  function formatTime(dt) { return `${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`; }
+
+  function saveMonthNote() {
+    const note = document.getElementById('mgr-note-input').value;
+    const mStr = `${currentDisplayDate.getFullYear()}-${String(currentDisplayDate.getMonth()+1).padStart(2,'0')}`;
+    callGAS({ mode:'set_month_note', name:user.name, password:user.pwd, viewMonth: mStr, note: note }, () => { alert("注意事項已儲存！"); refreshData(); });
   }
 
   function renderCalendar() {
@@ -191,116 +324,50 @@
     const y = currentDisplayDate.getFullYear(), m = currentDisplayDate.getMonth();
     document.getElementById('cal-month-title').innerText = `${y}年 ${m+1}月`;
     const firstDay = new Date(y, m, 1).getDay(), days = new Date(y, m+1, 0).getDate();
-    
     for(let i=0; i<firstDay; i++) grid.appendChild(document.createElement('div'));
-    
     const today = new Date();
     for(let i=1; i<=days; i++) {
       const dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
       const div = document.createElement('div'); div.className = 'cal-day';
-      
       if (i === today.getDate() && m === today.getMonth() && y === today.getFullYear()) div.classList.add('today');
       if (selectedDates.includes(dStr)) div.classList.add('selected');
-      
-      const config = db.config.find(c => formatDate(c[0])===dStr);
-      const takers = db.schedule.filter(s => formatDate(s[1])===dStr);
-      const unavails = db.unavail.filter(u => formatDate(u[1])===dStr);
-      const eventName = config ? config[2] : "";
-      const slots = config ? JSON.parse(config[1]) : getDefaultSlots(new Date(dStr).getDay());
-      
-      let html = `<div class="event-top">${eventName}</div>`;
-      html += `<div class="date-num">${i}</div>`;
-      
-      // 上層：灰條與排班人員
-      html += `<div class="slot-container">`;
-      slots.forEach((s, idx) => {
-        const taker = takers[idx]; 
-        html += `<div class="slot-bar ${taker ? 'occupied' : ''}">${taker ? taker[3] : ''}</div>`;
-      });
-      html += `</div>`;
-      
-      // 下層：不能排班標記
-      html += `<div class="unavail-container">`;
-      unavails.forEach(u => html += `<div class="unavail-tag">❌ ${u[2]}</div>`);
-      html += `</div>`;
-      
-      div.innerHTML = html;
-      div.onclick = () => toggleSelect(dStr);
+      const conf = db.config.find(c => formatDate(c[0])===dStr), tkrs = db.schedule.filter(s => formatDate(s[1])===dStr), unavs = db.unavail.filter(u => formatDate(u[1])===dStr);
+      const slots = conf ? JSON.parse(conf[1]) : getDefaultSlots(new Date(dStr).getDay());
+      div.innerHTML = `<div class="event-top">${conf ? conf[2] : ""}</div><div class="date-num">${i}</div><div class="slot-container">${slots.map((s,idx)=>{let t=tkrs[idx]; return `<div class="slot-bar ${t?'occupied':''}">${t?t[3]+(t[4]?' ('+t[4]+')':''):''}</div>`}).join('')}</div><div class="unavail-container">${unavs.map(u=>`<div class="unavail-tag">❌ ${u[2]}</div>`).join('')}</div>`;
+      div.onclick = () => { const idx = selectedDates.indexOf(dStr); if(idx>-1) selectedDates.splice(idx,1); else selectedDates.push(dStr); renderCalendar(); };
       grid.appendChild(div);
     }
-    updateActionPanel();
+    const isSel = selectedDates.length > 0;
+    document.getElementById('sel-count-text').innerText = isSel ? `已選擇 ${selectedDates.length} 天` : "請先點選上方日期";
+    document.getElementById('staff-actions').style.display = (isSel && !user.isManager) ? 'flex' : 'none';
+    document.getElementById('mgr-actions').style.display = (isSel && user.isManager) ? 'flex' : 'none';
+    document.querySelectorAll('.action-btn').forEach(b => isSel ? b.classList.add('active') : b.classList.remove('active'));
   }
-
-  function toggleSelect(date) {
-    const idx = selectedDates.indexOf(date);
-    if(idx > -1) selectedDates.splice(idx, 1); else selectedDates.push(date);
-    renderCalendar();
+  function staffBatchAction(a) {
+    if(db.locked && !user.isManager) return alert("班表鎖定中，暫不開放修改");
+    callGAS({ mode:'staff_action', name:user.name, password:user.pwd, dates:selectedDates.join(','), action:a, note:document.getElementById('staff-note').value }, () => { alert("已完成登記"); selectedDates=[]; document.getElementById('staff-note').value=''; refreshData(); });
   }
-
-  // 防呆：有選日期才亮起按鈕
-  function updateActionPanel() {
-    const isSelected = selectedDates.length > 0;
-    const txt = document.getElementById('sel-count-text');
-    txt.innerText = isSelected ? `已選擇 ${selectedDates.length} 天` : "請先點選上方日期";
-    txt.style.color = isSelected ? "var(--main-brown)" : "#999";
-    
-    document.querySelectorAll('.action-btn').forEach(btn => {
-      if(isSelected) btn.classList.add('active');
-      else btn.classList.remove('active');
-    });
-  }
-
-  function staffBatchAction(action) {
-    if(db.locked && !user.isManager) return alert("班表已鎖定");
-    callGAS({ mode:'staff_action', name:user.name, password:user.pwd, dates:selectedDates.join(','), action:action }, () => {
-      alert("已完成登記"); selectedDates=[]; refreshData();
-    });
-  }
-
   function mgrBatchSet() {
-    const ev = document.getElementById('mgr-event').value;
-    const num = document.getElementById('mgr-num').value;
-    const time = document.getElementById('mgr-time').value;
-    const slots = Array.from({length: parseInt(num)}, () => ({time: time}));
-    callGAS({ mode:'manager_set_config', name:user.name, password:user.pwd, dates:selectedDates.join(','), slots:JSON.stringify(slots), eventName:ev }, () => {
-      alert("已完成設定"); selectedDates=[]; refreshData();
-    });
+    const slots = Array.from({length: parseInt(document.getElementById('mgr-num').value)}, () => ({time: document.getElementById('mgr-time').value}));
+    callGAS({ mode:'manager_set_config', name:user.name, password:user.pwd, dates:selectedDates.join(','), slots:JSON.stringify(slots), eventName:document.getElementById('mgr-event').value }, () => { alert("已完成設定"); selectedDates=[]; refreshData(); });
   }
-
   function toggleLock() {
-    callGAS({ mode:'set_lock', name:user.name, password:user.pwd, lock: !db.locked }, refreshData);
+    const mStr = `${currentDisplayDate.getFullYear()}-${String(currentDisplayDate.getMonth()+1).padStart(2,'0')}`;
+    callGAS({ mode:'set_lock', name:user.name, password:user.pwd, viewMonth: mStr, lock: !db.locked }, refreshData);
   }
-
-  function doPunch(type) {
-    navigator.geolocation.getCurrentPosition(pos => {
-      callGAS({ mode:'punch', name:user.name, password:user.pwd, type:type, lat:pos.coords.latitude, lon:pos.coords.longitude }, res => { alert(res.message); });
-    }, () => alert("請開啟GPS定位"));
+  function doPunch(t) {
+    navigator.geolocation.getCurrentPosition(pos => { callGAS({ mode:'punch', name:user.name, password:user.pwd, type:t, lat:pos.coords.latitude, lon:pos.coords.longitude }, res => alert(res.message)); }, () => alert("請開啟GPS"));
   }
-
   function callGAS(p, cb){
     const cbN = 'cb'+Date.now(); window[cbN] = d => { cb(d); delete window[cbN]; document.body.removeChild(s); };
     let url = GAS_URL + "?callback="+cbN; for(let k in p) url += `&${k}=${encodeURIComponent(p[k])}`;
     const s = document.createElement('script'); s.src = url; document.body.appendChild(s);
   }
-  function changeMonth(o){ currentDisplayDate.setMonth(currentDisplayDate.getMonth()+o); selectedDates=[]; renderCalendar(); }
-  
-  // 本地時區轉換，解決 5/1 變 4/30 的問題
-  function formatDate(d){ 
-    try { 
-      const dt = new Date(d);
-      if(isNaN(dt)) return "";
-      const year = dt.getFullYear();
-      const month = String(dt.getMonth() + 1).padStart(2, '0');
-      const day = String(dt.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    } catch(e) { return ""; } 
-  }
-  
+  function changeMonth(o){ currentDisplayDate.setMonth(currentDisplayDate.getMonth()+o); selectedDates=[]; refreshData(); }
+  function formatDate(d){ try { const dt = new Date(d); return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`; } catch(e) { return ""; } }
   function logout(){ localStorage.clear(); location.reload(); }
-  function getDefaultSlots(day) {
-    const count = (day >= 2 && day <= 4) ? 1 : 2;
-    return Array.from({length: count}, () => ({time: "11:00-18:00"}));
-  }
+  function getDefaultSlots(day) { return Array.from({length: (day>=2 && day<=4)?1:2}, () => ({time: "11:00-18:00"})); }
+  
   document.addEventListener('DOMContentLoaded', initApp);
 </script>
 </body>
