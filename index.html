@@ -8,7 +8,7 @@
     :root { --main-brown: #8D6E63; --accent-green: #6B8E23; --bg: #FAF9F6; --light-pink: #FFE4E1; --gray-bar: #E0E0E0; }
     body { font-family: -apple-system, "PingFang TC", sans-serif; background: var(--bg); color: #5D4037; margin: 0; padding: 10px; }
     .card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); max-width: 500px; margin: auto; min-height: 90vh; display: flex; flex-direction: column; }
-    .btn { width: 100%; padding: 12px; margin: 8px 0; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 15px; }
+    .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 15px; }
     
     /* 頁籤設計 */
     .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
@@ -19,24 +19,26 @@
     
     /* 月曆視覺設計 */
     .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin: 15px 0; }
-    .cal-day { background: #FFF; border: 1px solid #F0F0F0; border-radius: 8px; min-height: 95px; padding: 4px 2px; cursor: pointer; display: flex; flex-direction: column; align-items: center; position: relative; }
+    .cal-day { background: #FFF; border: 1px solid #F0F0F0; border-radius: 8px; min-height: 95px; padding: 4px 2px; cursor: pointer; display: flex; flex-direction: column; align-items: center; position: relative; transition: 0.1s; }
     .cal-day.today { background: #FFFDE7; border: 2px solid #FFD54F; }
-    .cal-day.selected { border: 2px solid var(--main-brown); box-shadow: inset 0 0 5px rgba(141,110,99,0.3); }
+    
+    /* 明顯的選取標記 */
+    .cal-day.selected { background-color: #D7CCC8 !important; border: 2px solid #5D4037 !important; box-shadow: 0 0 8px rgba(93,64,55,0.3) !important; transform: scale(0.98); }
     
     .event-top { font-size: 9px; color: #F57C00; font-weight: bold; height: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; width: 100%; }
-    .date-num { font-weight: bold; font-size: 14px; margin: 2px 0; }
+    .date-num { font-weight: bold; font-size: 14px; margin: 2px 0; color: #333; }
     
     .slot-container { width: 95%; display: flex; flex-direction: column; gap: 2px; margin-top: 2px; }
     .slot-bar { height: 16px; background: var(--gray-bar); border-radius: 4px; font-size: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; color: transparent; }
-    .slot-bar.occupied { background: #D7CCC8; color: var(--main-brown); font-weight: bold; }
+    .slot-bar.occupied { background: #EFEBE9; color: var(--main-brown); font-weight: bold; border: 1px solid #D7CCC8; }
     
     .unavail-container { width: 95%; display: flex; flex-direction: column; gap: 2px; margin-top: auto; padding-top: 5px; }
     .unavail-tag { background: var(--light-pink); font-size: 9px; color: #D81B60; padding: 2px 0; border-radius: 3px; text-align: center; }
     
-    .selected-bar { background: var(--main-brown); color: white; padding: 12px; border-radius: 12px; margin-bottom: 10px; text-align: center; display: none; }
-    .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:none; align-items:center; justify-content:center; z-index:1000; padding:15px; }
-    .modal-content { background:white; width:100%; max-width:360px; border-radius:15px; padding:20px; }
-    input, select { width:100%; padding:10px; margin:8px 0; border-radius:8px; border:1px solid #DDD; font-size: 15px; }
+    /* 下方直覺操作面板 */
+    .action-panel { display: none; background: #F9F9F9; border: 1px solid #E0E0E0; border-radius: 12px; padding: 15px; margin-top: 15px; }
+    input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid #DDD; font-size: 14px; box-sizing: border-box; }
+    select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #DDD; font-size: 15px; box-sizing: border-box; }
   </style>
 </head>
 <body>
@@ -52,10 +54,17 @@
       <option value="山本勇太">山本勇太</option>
     </select>
     <input type="password" id="login-pwd" placeholder="輸入 4 位數密碼" inputmode="numeric">
-    <button class="btn" style="background:var(--main-brown); color:white;" onclick="handleLogin('staff')">進入系統</button>
-    <div style="text-align:center; margin-top:80px;">
-        <span style="color:#FDFDFD; font-size:10px; cursor:pointer;" onclick="showAdminPrompt()">Admin</span>
+    <button class="btn" style="background:var(--main-brown); color:white; margin-top:10px;" onclick="handleLogin('staff')">進入系統</button>
+    <div style="text-align:center; margin-top:60px;">
+        <span style="color:#F5F5F5; font-size:10px; cursor:pointer;" onclick="showAdminLogin()">Admin</span>
     </div>
+  </div>
+
+  <div id="admin-login-ui" style="display:none; text-align:center;">
+    <h2 style="margin-bottom:30px; color:var(--main-brown);">🔒 店長模式</h2>
+    <input type="password" id="admin-pwd" placeholder="輸入管理密碼" inputmode="numeric">
+    <button class="btn" style="background:#333; color:white; margin-top:10px;" onclick="handleLogin('manager')">進入管理</button>
+    <button class="btn" style="background:#EEE; color:#666; margin-top:10px;" onclick="backToLogin()">返回</button>
   </div>
 
   <div id="main-ui" style="display:none; flex-grow: 1; flex-direction: column;">
@@ -70,17 +79,12 @@
     </div>
 
     <div id="tab-punch" class="tab-content active" style="margin-top: 20px;">
-      <button class="btn" style="background:var(--accent-green); color:white; padding: 20px; font-size: 18px;" onclick="doPunch('上班')">🌅 上班打卡</button>
-      <button class="btn" style="background:#BC8F8F; color:white; padding: 20px; font-size: 18px; margin-top: 15px;" onclick="doPunch('下班')">🌇 下班打卡</button>
-      <p style="text-align: center; color: #999; font-size: 12px; margin-top: 20px;">請確保您在店面附近進行打卡</p>
+      <button class="btn" style="background:var(--accent-green); color:white; padding: 25px; font-size: 18px;" onclick="doPunch('上班')">🌅 上班打卡</button>
+      <button class="btn" style="background:#BC8F8F; color:white; padding: 25px; font-size: 18px; margin-top: 15px;" onclick="doPunch('下班')">🌇 下班打卡</button>
+      <p style="text-align: center; color: #999; font-size: 12px; margin-top: 25px;">請確保您在店面附近進行打卡</p>
     </div>
 
     <div id="tab-cal" class="tab-content">
-      <div id="selected-bar" class="selected-bar">
-        <span id="sel-count-text">已選擇 0 天</span>
-        <button class="btn" style="background:white; color:var(--main-brown); margin:8px 0 0 0; padding:6px;" onclick="showBatchAction()">處理所選日期</button>
-      </div>
-
       <div style="display:flex; justify-content:center; align-items:center; gap:25px; margin-bottom:5px;">
         <button onclick="changeMonth(-1)" style="border:none; background:none; font-size:22px; cursor:pointer; color:var(--main-brown);">◀</button>
         <h4 id="cal-month-title" style="margin:0; min-width: 110px; text-align:center;"></h4>
@@ -88,22 +92,33 @@
       </div>
       
       <div class="calendar" id="cal-grid"></div>
+
+      <div id="action-panel" class="action-panel">
+        <div id="sel-count-text" style="font-weight:bold; color:var(--main-brown); margin-bottom:12px; text-align:center; font-size:16px;">已選擇 0 天</div>
+        
+        <div id="staff-actions" style="display:none; flex-direction:column; gap:10px;">
+          <button class="btn" style="background:var(--accent-green); color:white; margin:0;" onclick="staffBatchAction('grab')">✅ 確定排班</button>
+          <button class="btn" style="background:#BC8F8F; color:white; margin:0;" onclick="staffBatchAction('unavail')">❌ 不能排班</button>
+          <button class="btn" style="background:#E0E0E0; color:#555; margin:0;" onclick="staffBatchAction('cancel_unavail')">🧹 清除標記 (變回空白)</button>
+        </div>
+
+        <div id="mgr-actions" style="display:none; flex-direction:column; gap:8px;">
+          <input id="mgr-event" placeholder="活動名稱 (例: SALE)" style="margin:0;">
+          <div style="display:flex; gap:8px;">
+            <input id="mgr-num" type="number" placeholder="人數" value="2" style="margin:0; flex:1;">
+            <input id="mgr-time" placeholder="時間" value="11:00-18:00" style="margin:0; flex:2;">
+          </div>
+          <button class="btn" style="background:var(--main-brown); color:white; margin:0; margin-top:5px;" onclick="mgrBatchSet()">確認設定</button>
+        </div>
+      </div>
     </div>
 
     <button class="btn" style="background:#F5F5F5; color:#999; margin-top:auto;" onclick="logout()">登出</button>
   </div>
 </div>
 
-<div id="action-modal" class="modal">
-  <div class="modal-content">
-    <h3 id="modal-date" style="margin-top:0;"></h3>
-    <div id="modal-body"></div>
-    <button class="btn" style="background:#F5F5F5" onclick="closeModal()">關閉</button>
-  </div>
-</div>
-
 <script>
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbwQTu5RDDcYKFmwcbUsAdE1mN-YbUeIG0vQvfPj3p3meqJ52UG1ulY7PA7IyQof5oYU/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbwQTu5RDDcYKFmwcbUsAdE1mN-YbUeIG0vQvfPj3p3meqJ52UG1ulY7PA7IyQof5oYU/exec"; 
   let user = { name: "", pwd: "", isManager: false };
   let db = { config: [], schedule: [], unavail: [], locked: false };
   let currentDisplayDate = new Date();
@@ -114,29 +129,33 @@
     document.getElementById('tab-cal').classList.remove('active');
     document.getElementById('btn-tab-punch').classList.remove('active');
     document.getElementById('btn-tab-cal').classList.remove('active');
-    
     document.getElementById('tab-' + tabId).classList.add('active');
     document.getElementById('btn-tab-' + tabId).classList.add('active');
   }
 
-  function showAdminPrompt() {
-    const p = prompt(""); 
-    if (p === "8591") {
-      user = { name: "Manager", pwd: "8591", isManager: true };
-      localStorage.setItem('asahi_user', JSON.stringify(user));
-      initApp();
-    } else if (p !== null && p !== "") {
-      alert("密碼錯誤");
-    }
+  function showAdminLogin() {
+    document.getElementById('login-ui').style.display = 'none';
+    document.getElementById('admin-login-ui').style.display = 'block';
   }
 
-  function handleLogin() {
-    const n = document.getElementById('login-name').value;
-    const p = document.getElementById('login-pwd').value;
-    if(!n || !p) return alert("請輸入完整資訊");
+  function backToLogin() {
+    document.getElementById('admin-login-ui').style.display = 'none';
+    document.getElementById('login-ui').style.display = 'block';
+  }
+
+  function handleLogin(type) {
+    const n = (type === 'manager') ? 'Manager' : document.getElementById('login-name').value;
+    const p = (type === 'manager') ? document.getElementById('admin-pwd').value : document.getElementById('login-pwd').value;
+    if(!p) return alert("請輸入密碼");
+    
     callGAS({ mode:'login', name:n, password:p }, res => {
-      if(res.status==='success'){ user={name:n, pwd:p, isManager:res.isManager}; localStorage.setItem('asahi_user', JSON.stringify(user)); initApp(); }
-      else alert("密碼錯誤");
+      if(res.status==='success'){ 
+        user={name:n, pwd:p, isManager:res.isManager}; 
+        localStorage.setItem('asahi_user', JSON.stringify(user)); 
+        initApp(); 
+      } else {
+        alert("密碼錯誤");
+      }
     });
   }
 
@@ -145,6 +164,7 @@
     if(saved){ 
       user=JSON.parse(saved); 
       document.getElementById('login-ui').style.display='none'; 
+      document.getElementById('admin-login-ui').style.display='none'; 
       document.getElementById('main-ui').style.display='flex'; 
       refreshData(); 
     }
@@ -176,6 +196,7 @@
       if (i === today.getDate() && m === today.getMonth() && y === today.getFullYear()) {
           div.classList.add('today');
       }
+      // 添加選中標記
       if(selectedDates.includes(dStr)) div.classList.add('selected');
       
       const config = db.config.find(c => formatDate(c[0])===dStr);
@@ -202,37 +223,39 @@
       div.onclick = () => toggleSelect(dStr);
       grid.appendChild(div);
     }
+    
+    updateActionPanel();
   }
 
   function toggleSelect(date) {
     const idx = selectedDates.indexOf(date);
     if(idx > -1) selectedDates.splice(idx, 1); else selectedDates.push(date);
-    document.getElementById('selected-bar').style.display = selectedDates.length > 0 ? 'block' : 'none';
-    document.getElementById('sel-count-text').innerText = `已選擇 ${selectedDates.length} 天`;
+    renderCalendar(); // 重新渲染以更新選中樣式
   }
 
-  function showBatchAction() {
-    const body = document.getElementById('modal-body');
-    document.getElementById('modal-date').innerText = "處理 " + selectedDates.length + " 天";
-    let html = "";
-    if(user.isManager) {
-      html = `活動名稱: <input id="mgr-event" placeholder="例如: SALE">
-              需求人數: <input id="mgr-num" type="number" value="2">
-              上班時間: <input id="mgr-time" value="11:00-18:00">
-              <button class="btn" style="background:var(--main-brown); color:white;" onclick="mgrBatchSet()">設定活動日</button>`;
+  // 控制月曆下方的操作面板顯示
+  function updateActionPanel() {
+    const panel = document.getElementById('action-panel');
+    if (selectedDates.length > 0) {
+      panel.style.display = 'block';
+      document.getElementById('sel-count-text').innerText = `已選擇 ${selectedDates.length} 天`;
+      
+      if (user.isManager) {
+        document.getElementById('mgr-actions').style.display = 'flex';
+        document.getElementById('staff-actions').style.display = 'none';
+      } else {
+        document.getElementById('mgr-actions').style.display = 'none';
+        document.getElementById('staff-actions').style.display = 'flex';
+      }
     } else {
-      html = `<button class="btn" style="background:var(--accent-green); color:white;" onclick="staffBatchAction('grab')">排班</button>
-              <button class="btn" style="background:#BC8F8F; color:white;" onclick="staffBatchAction('unavail')">不能排班</button>
-              <button class="btn" style="background:#EEE; color:#666;" onclick="staffBatchAction('cancel_unavail')">清除標記 (變回空白)</button>`;
+      panel.style.display = 'none';
     }
-    body.innerHTML = html;
-    document.getElementById('action-modal').style.display = 'flex';
   }
 
   function staffBatchAction(action) {
     if(db.locked && !user.isManager) return alert("班表已鎖定");
     callGAS({ mode:'staff_action', name:user.name, password:user.pwd, dates:selectedDates.join(','), action:action }, () => {
-      alert("已完成登記"); selectedDates=[]; document.getElementById('selected-bar').style.display='none'; closeModal(); refreshData();
+      alert("已完成登記"); selectedDates=[]; refreshData();
     });
   }
 
@@ -242,7 +265,7 @@
     const time = document.getElementById('mgr-time').value;
     const slots = Array.from({length: parseInt(num)}, () => ({time: time}));
     callGAS({ mode:'manager_set_config', name:user.name, password:user.pwd, dates:selectedDates.join(','), slots:JSON.stringify(slots), eventName:ev }, () => {
-      alert("已完成設定"); selectedDates=[]; document.getElementById('selected-bar').style.display='none'; closeModal(); refreshData();
+      alert("已完成設定"); selectedDates=[]; refreshData();
     });
   }
 
@@ -261,8 +284,7 @@
     let url = GAS_URL + "?callback="+cbN; for(let k in p) url += `&${k}=${encodeURIComponent(p[k])}`;
     const s = document.createElement('script'); s.src = url; document.body.appendChild(s);
   }
-  function changeMonth(o){ currentDisplayDate.setMonth(currentDisplayDate.getMonth()+o); renderCalendar(); }
-  function closeModal(){ document.getElementById('action-modal').style.display='none'; }
+  function changeMonth(o){ currentDisplayDate.setMonth(currentDisplayDate.getMonth()+o); selectedDates=[]; renderCalendar(); }
   function formatDate(d){ try { return new Date(d).toISOString().split('T')[0]; } catch(e) { return ""; } }
   function logout(){ localStorage.clear(); location.reload(); }
   function getDefaultSlots(day) {
