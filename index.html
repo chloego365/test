@@ -20,17 +20,17 @@
     /* 月曆視覺設計 */
     .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin: 15px 0; }
     .cal-day { background: #FFF; border: 1px solid #F0F0F0; border-radius: 8px; min-height: 95px; padding: 4px 2px; cursor: pointer; display: flex; flex-direction: column; align-items: center; position: relative; }
-    .cal-day.today { background: #FFFDE7; border: 2px solid #FFD54F; } /* 今日黃底 */
+    .cal-day.today { background: #FFFDE7; border: 2px solid #FFD54F; }
     .cal-day.selected { border: 2px solid var(--main-brown); box-shadow: inset 0 0 5px rgba(141,110,99,0.3); }
     
-    .event-top { font-size: 9px; color: #F57C00; font-weight: bold; height: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; width: 100%; } /* 活動橘字 */
+    .event-top { font-size: 9px; color: #F57C00; font-weight: bold; height: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; width: 100%; }
     .date-num { font-weight: bold; font-size: 14px; margin: 2px 0; }
     
     .slot-container { width: 95%; display: flex; flex-direction: column; gap: 2px; margin-top: 2px; }
     .slot-bar { height: 16px; background: var(--gray-bar); border-radius: 4px; font-size: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; color: transparent; }
     .slot-bar.occupied { background: #D7CCC8; color: var(--main-brown); font-weight: bold; }
     
-    .unavail-container { width: 95%; display: flex; flex-direction: column; gap: 2px; margin-top: auto; padding-top: 5px; } /* 靠下對齊 */
+    .unavail-container { width: 95%; display: flex; flex-direction: column; gap: 2px; margin-top: auto; padding-top: 5px; }
     .unavail-tag { background: var(--light-pink); font-size: 9px; color: #D81B60; padding: 2px 0; border-radius: 3px; text-align: center; }
     
     .selected-bar { background: var(--main-brown); color: white; padding: 12px; border-radius: 12px; margin-bottom: 10px; text-align: center; display: none; }
@@ -58,7 +58,7 @@
     </div>
   </div>
 
-  <div id="main-ui" style="display:none; flex-grow: 1; display: flex; flex-direction: column;">
+  <div id="main-ui" style="display:none; flex-grow: 1; flex-direction: column;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
       <h3 id="welcome-msg" style="margin:0;">你好</h3>
       <button id="mgr-lock-btn" class="btn" style="width:90px; padding:6px; font-size:11px; display:none; margin:0;" onclick="toggleLock()"></button>
@@ -103,13 +103,12 @@
 </div>
 
 <script>
-  const GAS_URL = "您的_GAS_網址";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbwQTu5RDDcYKFmwcbUsAdE1mN-YbUeIG0vQvfPj3p3meqJ52UG1ulY7PA7IyQof5oYU/exec";
   let user = { name: "", pwd: "", isManager: false };
   let db = { config: [], schedule: [], unavail: [], locked: false };
   let currentDisplayDate = new Date();
   let selectedDates = [];
 
-  // 頁籤切換邏輯
   function switchTab(tabId) {
     document.getElementById('tab-punch').classList.remove('active');
     document.getElementById('tab-cal').classList.remove('active');
@@ -120,9 +119,8 @@
     document.getElementById('btn-tab-' + tabId).classList.add('active');
   }
 
-  // Admin 隱藏入口
   function showAdminPrompt() {
-    const p = prompt(""); // 依要求不顯示密碼預設文字
+    const p = prompt(""); 
     if (p === "8591") {
       user = { name: "Manager", pwd: "8591", isManager: true };
       localStorage.setItem('asahi_user', JSON.stringify(user));
@@ -175,7 +173,6 @@
       const dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
       const div = document.createElement('div'); div.className = 'cal-day';
       
-      // 判斷今日 (黃色外框與微黃底)
       if (i === today.getDate() && m === today.getMonth() && y === today.getFullYear()) {
           div.classList.add('today');
       }
@@ -187,19 +184,16 @@
       const eventName = config ? config[2] : "";
       const slots = config ? JSON.parse(config[1]) : getDefaultSlots(new Date(dStr).getDay());
       
-      // 活動橘字 (在最上方)
       let html = `<div class="event-top">${eventName}</div>`;
       html += `<div class="date-num">${i}</div>`;
       
-      // 排班名額 (靠上對齊)
       html += `<div class="slot-container">`;
       slots.forEach((s, idx) => {
-        const taker = takers[idx]; // 依序排入
+        const taker = takers[idx]; 
         html += `<div class="slot-bar ${taker ? 'occupied' : ''}">${taker ? taker[3] : ''}</div>`;
       });
       html += `</div>`;
       
-      // 不能排班標記 (靠下對齊)
       html += `<div class="unavail-container">`;
       unavails.forEach(u => html += `<div class="unavail-tag">❌ ${u[2]}</div>`);
       html += `</div>`;
